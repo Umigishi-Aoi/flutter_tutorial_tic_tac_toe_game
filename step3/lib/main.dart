@@ -46,13 +46,13 @@ class Board extends StatefulWidget {
 }
 
 class _BoardState extends State<Board> {
-  List<String?> squares = List.generate(9, (index) => null);
+  List<String?> _squares = List.generate(9, (index) => null);
 
   void handleClick(int i) {
-    final tempSquares = squares.sublist(0);
-    tempSquares[i] = 'X';
+    final squares = _squares.sublist(0);
+    squares[i] = 'X';
     setState(() {
-      squares = tempSquares;
+      _squares = squares;
     });
   }
 
@@ -71,7 +71,7 @@ class _BoardState extends State<Board> {
               9,
               (int i) => Square(
                 onTap: () => handleClick(i),
-                value: squares[i],
+                value: _squares[i],
               ),
             ),
           ),
