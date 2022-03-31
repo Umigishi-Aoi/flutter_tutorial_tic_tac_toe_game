@@ -27,7 +27,7 @@ class Square extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            value != null ? value! : '',
+            value ?? '',
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),
