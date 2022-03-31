@@ -7,14 +7,17 @@ void main() {
 class Square extends StatelessWidget {
   const Square({
     Key? key,
+    required this.onTap,
     required this.value,
   }) : super(key: key);
 
+  final void Function() onTap;
   final String? value;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: onTap,
       child: Container(
         height: 34,
         width: 34,
@@ -44,6 +47,14 @@ class Board extends StatefulWidget {
 class _BoardState extends State<Board> {
   List<String?> squares = List.generate(9, (index) => null);
 
+  void handleClick(int i) {
+    final tempSquares = squares.sublist(0);
+    tempSquares[i] = 'X';
+    setState(() {
+      squares = tempSquares;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -57,7 +68,10 @@ class _BoardState extends State<Board> {
             crossAxisCount: 3,
             children: List.generate(
               9,
-              (int i) => Square(value: squares[i]),
+              (int i) => Square(
+                onTap: () => handleClick(i),
+                value: squares[i],
+              ),
             ),
           ),
         ),
