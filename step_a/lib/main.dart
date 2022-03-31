@@ -1,3 +1,4 @@
+//タップに反応するようにしよう
 import 'package:flutter/material.dart';
 
 void main() {

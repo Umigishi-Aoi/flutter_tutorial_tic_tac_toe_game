@@ -1,3 +1,4 @@
+//データの受け渡しの練習
 import 'package:flutter/material.dart';
 
 void main() {
