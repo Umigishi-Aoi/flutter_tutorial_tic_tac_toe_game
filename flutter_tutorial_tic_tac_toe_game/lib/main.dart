@@ -1,115 +1,175 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Game());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Square extends StatelessWidget {
+  final void Function() onTap;
+  final String? value;
 
-  // This widget is the root of your application.
+  const Square({
+    Key? key,
+    required this.onTap,
+    required this.value,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 34,
+        width: 34,
+        decoration: BoxDecoration(
+          border:
+              Border.all(color: const Color.fromRGBO(9, 9, 9, 1.0), width: 1),
+        ),
+        child: Center(
+          child: Text(
+            value != null ? value! : '',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class Board extends StatelessWidget {
+  final void Function(int i) onTap;
+  final List<String?> squares;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const Board({
+    Key? key,
+    required this.onTap,
+    required this.squares,
+  }) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 34 * 3,
+      width: 34 * 3,
+      child: GridView.count(
+        shrinkWrap: true,
+        crossAxisCount: 3,
+        children: List.generate(
+          9,
+          (int i) => Square(onTap: () => onTap(i), value: squares[i],),
+        ),
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class Game extends StatefulWidget {
+  const Game({Key? key}) : super(key: key);
 
-  void _incrementCounter() {
+  @override
+  State<Game> createState() => _GameState();
+}
+
+class _GameState extends State<Game> {
+  List<Map<String, List<String?>>> _history = [
+    {'squares': List.generate(9, (index) => null)}
+  ];
+  int _stepNumber = 0;
+  bool _xIsNext = true;
+
+  handleClick(int i) {
+    List<Map<String, List<String?>>> history =
+        _history.sublist(0, _stepNumber + 1);
+    Map<String, List<String?>> current = history[history.length - 1];
+    List<String?> squares = current['squares']!.sublist(0);
+
+    if (calculateWinner(squares) != null || squares[i] != null) {
+      return;
+    }
+    squares[i] = _xIsNext ? 'X' : 'O';
+    history.add({'squares': squares});
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _history = history;
+      _stepNumber = history.length-1;
+      _xIsNext = !_xIsNext;
+    });
+  }
+
+  jumpTo(step) {
+    setState(() {
+      _stepNumber = step;
+      _xIsNext = (step % 2) == 0;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+    List<Map<String, List<String?>>> history = _history;
+    Map<String, List<String?>> current = history[_stepNumber];
+    String? winner = calculateWinner(current['squares']!);
+
+    List<ElevatedButton> moves = history.map((squares) {
+      int step = history.indexOf(squares);
+      String desc = step != 0 ? 'Go to move #$step' : 'Go to game start';
+      return ElevatedButton(onPressed: () => jumpTo(step), child: Text(desc));
+    }).toList();
+
+    String status;
+
+    if (winner != null) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (_xIsNext ? 'X' : 'O');
+    }
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+          body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Board(
+                onTap: (index) => handleClick(index),
+                squares: current['squares']!),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(status),
+                ),
+                Column(
+                  children: moves,
+                )
+              ]),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      )),
     );
   }
+}
+
+String? calculateWinner(List<String?> squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+  for (int i = 0; i < lines.length; i++) {
+    final List<int> indexs = lines[i];
+    if (squares[indexs[0]] != null &&
+        squares[indexs[0]] == squares[indexs[1]] &&
+        squares[indexs[0]] == squares[indexs[2]]) {
+      return squares[indexs[0]]!;
+    }
+  }
+  return null;
 }
