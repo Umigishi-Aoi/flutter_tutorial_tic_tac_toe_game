@@ -66,14 +66,9 @@ class Board extends StatelessWidget {
   }
 }
 
-class Game extends StatefulWidget {
+class Game extends StatelessWidget {
   const Game({Key? key}) : super(key: key);
 
-  @override
-  State<Game> createState() => _GameState();
-}
-
-class _GameState extends State<Game> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
