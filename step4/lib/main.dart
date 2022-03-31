@@ -60,9 +60,10 @@ class _BoardState extends State<Board> {
 
   @override
   Widget build(BuildContext context) {
+    final status = 'Next Player: ${_xIsNext ? 'X' : 'O'}';
     return Column(
       children: [
-        Text('Next Player: ${_xIsNext ? 'X' : 'O'}'),
+        Text(status),
         SizedBox(
           height: 34 * 3,
           width: 34 * 3,

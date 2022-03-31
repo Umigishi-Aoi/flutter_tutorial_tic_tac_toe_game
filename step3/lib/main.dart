@@ -58,9 +58,10 @@ class _BoardState extends State<Board> {
 
   @override
   Widget build(BuildContext context) {
+    const status = 'Next Player: X';
     return Column(
       children: [
-        const Text('Next Player: X'),
+        const Text(status),
         SizedBox(
           height: 34 * 3,
           width: 34 * 3,
