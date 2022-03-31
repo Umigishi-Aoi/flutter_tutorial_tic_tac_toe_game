@@ -1,4 +1,4 @@
-//親から子にメソッドを渡そう
+//XとOを交互に表示しよう
 import 'package:flutter/material.dart';
 
 void main() {
@@ -51,9 +51,10 @@ class _BoardState extends State<Board> {
 
   void handleClick(int i) {
     final squares = _squares.sublist(0);
-    squares[i] = 'X';
+    squares[i] = _xIsNext ? 'X' : 'O';
     setState(() {
       _squares = squares;
+      _xIsNext = !_xIsNext;
     });
   }
 
@@ -61,7 +62,7 @@ class _BoardState extends State<Board> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text('Next Player: X'),
+        Text('Next Player: ${_xIsNext ? 'X' : 'O'}'),
         SizedBox(
           height: 34 * 3,
           width: 34 * 3,
