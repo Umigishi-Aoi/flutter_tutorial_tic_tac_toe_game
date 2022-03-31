@@ -15,13 +15,13 @@ class Square extends StatefulWidget {
 }
 
 class _SquareState extends State<Square> {
-  String value = '';
+  String _value = '';
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => setState(() {
-        value = 'X';
+        _value = 'X';
       }),
       child: Container(
         height: 34,
@@ -31,7 +31,7 @@ class _SquareState extends State<Square> {
         ),
         child: Center(
           child: Text(
-            value,
+            _value,
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),

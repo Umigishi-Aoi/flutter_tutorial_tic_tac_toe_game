@@ -43,7 +43,7 @@ class Board extends StatefulWidget {
 }
 
 class _BoardState extends State<Board> {
-  List<String?> squares = List.generate(9, (index) => null);
+  List<String?> _squares = List.generate(9, (index) => null);
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class _BoardState extends State<Board> {
             crossAxisCount: 3,
             children: List.generate(
               9,
-              (int i) => Square(value: squares[i]),
+              (int i) => Square(value: _squares[i]),
             ),
           ),
         ),
