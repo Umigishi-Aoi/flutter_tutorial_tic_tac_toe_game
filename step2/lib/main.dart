@@ -10,7 +10,7 @@ class Square extends StatelessWidget {
     required this.value,
   }) : super(key: key);
 
-  final String value;
+  final String? value;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class Square extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            value,
+            value ?? '',
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),
@@ -32,10 +32,17 @@ class Square extends StatelessWidget {
   }
 }
 
-class Board extends StatelessWidget {
+class Board extends StatefulWidget {
   const Board({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<Board> createState() => _BoardState();
+}
+
+class _BoardState extends State<Board> {
+  List<String?> squares = List.generate(9, (index) => null);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +57,7 @@ class Board extends StatelessWidget {
             crossAxisCount: 3,
             children: List.generate(
               9,
-              (int i) => Square(value: '$i'),
+              (int i) => Square(value: squares[i]),
             ),
           ),
         ),
