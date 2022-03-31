@@ -16,8 +16,7 @@ class Square extends StatelessWidget {
         height: 34,
         width: 34,
         decoration: BoxDecoration(
-          border:
-              Border.all(color: const Color.fromRGBO(9, 9, 9, 1.0), width: 1),
+          border: Border.all(color: const Color.fromRGBO(9, 9, 9, 1), width: 1),
         ),
         child: const Center(
           child: Text(
@@ -70,19 +69,20 @@ class _GameState extends State<Game> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-          body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Board(),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Column(children: const []),
-            ),
-          ],
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Board(),
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(children: const []),
+              ),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }

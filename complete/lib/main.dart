@@ -5,14 +5,14 @@ void main() {
 }
 
 class Square extends StatelessWidget {
-  final void Function() onTap;
-  final String? value;
-
   const Square({
     Key? key,
     required this.onTap,
     required this.value,
   }) : super(key: key);
+
+  final void Function() onTap;
+  final String? value;
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +22,7 @@ class Square extends StatelessWidget {
         height: 34,
         width: 34,
         decoration: BoxDecoration(
-          border:
-              Border.all(color: const Color.fromRGBO(9, 9, 9, 1.0), width: 1),
+          border: Border.all(color: const Color.fromRGBO(9, 9, 9, 1), width: 1),
         ),
         child: Center(
           child: Text(
@@ -37,14 +36,14 @@ class Square extends StatelessWidget {
 }
 
 class Board extends StatelessWidget {
-  final void Function(int i) onTap;
-  final List<String?> squares;
-
   const Board({
     Key? key,
     required this.onTap,
     required this.squares,
   }) : super(key: key);
+
+  final void Function(int i) onTap;
+  final List<String?> squares;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +55,10 @@ class Board extends StatelessWidget {
         crossAxisCount: 3,
         children: List.generate(
           9,
-          (int i) => Square(onTap: () => onTap(i), value: squares[i],),
+          (int i) => Square(
+            onTap: () => onTap(i),
+            value: squares[i],
+          ),
         ),
       ),
     );
@@ -77,11 +79,10 @@ class _GameState extends State<Game> {
   int _stepNumber = 0;
   bool _xIsNext = true;
 
-  handleClick(int i) {
-    List<Map<String, List<String?>>> history =
-        _history.sublist(0, _stepNumber + 1);
-    Map<String, List<String?>> current = history[history.length - 1];
-    List<String?> squares = current['squares']!.sublist(0);
+  void handleClick(int i) {
+    final history = _history.sublist(0, _stepNumber + 1);
+    final current = history[history.length - 1];
+    final squares = current['squares']!.sublist(0);
 
     if (calculateWinner(squares) != null || squares[i] != null) {
       return;
@@ -90,12 +91,12 @@ class _GameState extends State<Game> {
     history.add({'squares': squares});
     setState(() {
       _history = history;
-      _stepNumber = history.length-1;
+      _stepNumber = history.length - 1;
       _xIsNext = !_xIsNext;
     });
   }
 
-  jumpTo(step) {
+  void jumpTo(int step) {
     setState(() {
       _stepNumber = step;
       _xIsNext = (step % 2) == 0;
@@ -104,50 +105,54 @@ class _GameState extends State<Game> {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, List<String?>>> history = _history;
-    Map<String, List<String?>> current = history[_stepNumber];
-    String? winner = calculateWinner(current['squares']!);
+    final history = _history;
+    final current = history[_stepNumber];
+    final winner = calculateWinner(current['squares']!);
 
-    List<ElevatedButton> moves = history.map((squares) {
-      int step = history.indexOf(squares);
-      String desc = step != 0 ? 'Go to move #$step' : 'Go to game start';
+    final moves = history.map((squares) {
+      final step = history.indexOf(squares);
+      final desc = step != 0 ? 'Go to move #$step' : 'Go to game start';
       return ElevatedButton(onPressed: () => jumpTo(step), child: Text(desc));
     }).toList();
 
     String status;
 
     if (winner != null) {
-      status = 'Winner: ' + winner;
+      status = 'Winner: $winner';
     } else {
-      status = 'Next player: ' + (_xIsNext ? 'X' : 'O');
+      status = 'Next player: ${_xIsNext ? 'X' : 'O'}';
     }
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-          body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Board(
-                onTap: (index) => handleClick(index),
-                squares: current['squares']!),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Column(children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(status),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Board(
+                onTap: handleClick,
+                squares: current['squares']!,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(status),
+                    ),
+                    Column(
+                      children: moves,
+                    )
+                  ],
                 ),
-                Column(
-                  children: moves,
-                )
-              ]),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
@@ -163,12 +168,12 @@ String? calculateWinner(List<String?> squares) {
     [0, 4, 8],
     [2, 4, 6]
   ];
-  for (int i = 0; i < lines.length; i++) {
-    final List<int> indexs = lines[i];
+  for (var i = 0; i < lines.length; i++) {
+    final indexs = lines[i];
     if (squares[indexs[0]] != null &&
         squares[indexs[0]] == squares[indexs[1]] &&
         squares[indexs[0]] == squares[indexs[2]]) {
-      return squares[indexs[0]]!;
+      return squares[indexs[0]];
     }
   }
   return null;
