@@ -48,24 +48,20 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 34 * 3,
-          width: 34 * 3,
-          child: GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 3,
-            children: List.generate(
-              9,
-              (int i) => Square(
-                onTap: () => onTap(i),
-                value: squares[i],
-              ),
-            ),
+    return SizedBox(
+      height: 34 * 3,
+      width: 34 * 3,
+      child: GridView.count(
+        shrinkWrap: true,
+        crossAxisCount: 3,
+        children: List.generate(
+          9,
+          (int i) => Square(
+            onTap: () => onTap(i),
+            value: squares[i],
           ),
         ),
-      ],
+      ),
     );
   }
 }
