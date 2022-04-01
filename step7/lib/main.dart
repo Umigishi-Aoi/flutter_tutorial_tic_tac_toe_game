@@ -1,4 +1,4 @@
-//「盤面の状態の記録」の状態の定義
+//Step7.過去の着順を表示する
 import 'package:flutter/material.dart';
 
 void main() {
@@ -105,6 +105,12 @@ class _GameState extends State<Game> {
     final current = history[history.length - 1];
     final winner = calculateWinner(current['squares']!);
 
+    final moves = history.map((squares) {
+      final step = history.indexOf(squares);
+      final desc = step != 0 ? 'Go to move #$step' : 'Go to game start';
+      return ElevatedButton(onPressed: () {}, child: Text(desc));
+    }).toList();
+
     String status;
 
     if (winner != null) {
@@ -133,6 +139,9 @@ class _GameState extends State<Game> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(status),
                     ),
+                    Column(
+                      children: moves,
+                    )
                   ],
                 ),
               ),
