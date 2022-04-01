@@ -1,4 +1,4 @@
-//「盤面の状態の記録」の状態の定義
+//Step6.「盤面の状態の記録」の状態の定義
 import 'package:flutter/material.dart';
 
 void main() {

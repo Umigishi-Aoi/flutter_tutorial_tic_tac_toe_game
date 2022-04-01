@@ -1,4 +1,4 @@
-//XとOを交互に表示しよう
+//Step4.XとOを交互に表示しよう
 import 'package:flutter/material.dart';
 
 void main() {

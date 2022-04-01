@@ -1,4 +1,4 @@
-//ゲーム勝者の判定をしよう
+//Step5.ゲーム勝者の判定をしよう
 import 'package:flutter/material.dart';
 
 void main() {

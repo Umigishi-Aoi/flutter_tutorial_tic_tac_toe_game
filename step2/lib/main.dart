@@ -1,4 +1,4 @@
-//親から子に状態を渡そう
+//Step2.親から子に状態を渡そう
 import 'package:flutter/material.dart';
 
 void main() {

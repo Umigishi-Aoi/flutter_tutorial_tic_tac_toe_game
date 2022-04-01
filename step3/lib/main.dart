@@ -1,4 +1,4 @@
-//親から子にメソッドを渡そう
+//Step3.親から子にメソッドを渡そう
 import 'package:flutter/material.dart';
 
 void main() {
