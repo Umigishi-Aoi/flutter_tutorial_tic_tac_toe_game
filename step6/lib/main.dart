@@ -1,4 +1,4 @@
-//ゲーム勝者の判定をしよう
+//「盤面の状態の記録」の状態の定義
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,43 +36,20 @@ class Square extends StatelessWidget {
   }
 }
 
-class Board extends StatefulWidget {
+class Board extends StatelessWidget {
   const Board({
     Key? key,
+    required this.onTap,
+    required this.squares,
   }) : super(key: key);
 
-  @override
-  State<Board> createState() => _BoardState();
-}
-
-class _BoardState extends State<Board> {
-  List<String?> _squares = List.generate(9, (index) => null);
-  bool _xIsNext = true;
-
-  void handleClick(int i) {
-    final squares = _squares.sublist(0);
-    if (calculateWinner(squares) != null || squares[i] != null) {
-      return;
-    }
-    squares[i] = _xIsNext ? 'X' : 'O';
-    setState(() {
-      _squares = squares;
-      _xIsNext = !_xIsNext;
-    });
-  }
+  final void Function(int i) onTap;
+  final List<String?> squares;
 
   @override
   Widget build(BuildContext context) {
-    final winner = calculateWinner(_squares);
-    String status;
-    if (winner != null) {
-      status = 'Winner: $winner';
-    } else {
-      status = 'Next player: ${_xIsNext ? 'X' : 'O'}';
-    }
     return Column(
       children: [
-        Text(status),
         SizedBox(
           height: 34 * 3,
           width: 34 * 3,
@@ -82,8 +59,8 @@ class _BoardState extends State<Board> {
             children: List.generate(
               9,
               (int i) => Square(
-                onTap: () => handleClick(i),
-                value: _squares[i],
+                onTap: () => onTap(i),
+                value: squares[i],
               ),
             ),
           ),
@@ -93,11 +70,49 @@ class _BoardState extends State<Board> {
   }
 }
 
-class Game extends StatelessWidget {
+class Game extends StatefulWidget {
   const Game({Key? key}) : super(key: key);
 
   @override
+  State<Game> createState() => _GameState();
+}
+
+class _GameState extends State<Game> {
+  List<Map<String, List<String?>>> _history = [
+    {'squares': List.generate(9, (index) => null)}
+  ];
+  bool _xIsNext = true;
+
+  void handleClick(int i) {
+    final history = _history;
+    final current = history[history.length - 1];
+    final squares = current['squares']!.sublist(0);
+
+    if (calculateWinner(squares) != null || squares[i] != null) {
+      return;
+    }
+    squares[i] = _xIsNext ? 'X' : 'O';
+    history.add({'squares': squares});
+    setState(() {
+      _history = history;
+      _xIsNext = !_xIsNext;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final history = _history;
+    final current = history[history.length - 1];
+    final winner = calculateWinner(current['squares']!);
+
+    String status;
+
+    if (winner != null) {
+      status = 'Winner: $winner';
+    } else {
+      status = 'Next player: ${_xIsNext ? 'X' : 'O'}';
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -106,10 +121,20 @@ class Game extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Board(),
+              Board(
+                onTap: handleClick,
+                squares: current['squares']!,
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 20),
-                child: Column(children: const []),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(status),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
