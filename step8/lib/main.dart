@@ -1,4 +1,4 @@
-//Step7.過去の着順を表示する
+//Step8. タイムトラベル機能の実装
 import 'package:flutter/material.dart';
 
 void main() {
@@ -48,24 +48,20 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 34 * 3,
-          width: 34 * 3,
-          child: GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 3,
-            children: List.generate(
-              9,
-              (int i) => Square(
-                onTap: () => onTap(i),
-                value: squares[i],
-              ),
-            ),
+    return SizedBox(
+      height: 34 * 3,
+      width: 34 * 3,
+      child: GridView.count(
+        shrinkWrap: true,
+        crossAxisCount: 3,
+        children: List.generate(
+          9,
+          (int i) => Square(
+            onTap: () => onTap(i),
+            value: squares[i],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -81,10 +77,11 @@ class _GameState extends State<Game> {
   List<Map<String, List<String?>>> _history = [
     {'squares': List.generate(9, (index) => null)}
   ];
+  int _stepNumber = 0;
   bool _xIsNext = true;
 
   void handleClick(int i) {
-    final history = _history;
+    final history = _history.sublist(0, _stepNumber + 1);
     final current = history[history.length - 1];
     final squares = current['squares']!.sublist(0);
 
@@ -95,20 +92,28 @@ class _GameState extends State<Game> {
     history.add({'squares': squares});
     setState(() {
       _history = history;
+      _stepNumber = history.length - 1;
       _xIsNext = !_xIsNext;
+    });
+  }
+
+  void jumpTo(int step) {
+    setState(() {
+      _stepNumber = step;
+      _xIsNext = (step % 2) == 0;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final history = _history;
-    final current = history[history.length - 1];
+    final current = history[_stepNumber];
     final winner = calculateWinner(current['squares']!);
 
     final moves = history.map((squares) {
       final step = history.indexOf(squares);
       final desc = step != 0 ? 'Go to move #$step' : 'Go to game start';
-      return ElevatedButton(onPressed: () {}, child: Text(desc));
+      return ElevatedButton(onPressed: () => jumpTo(step), child: Text(desc));
     }).toList();
 
     String status;
